@@ -35,7 +35,8 @@ var Sticky = function () {
     this.options = {
       wrap: options.wrap || false,
       marginTop: options.marginTop || 0,
-      stickyFor: options.stickyFor || 0,
+      stickyFrom: options.stickyFrom || 0,
+      stickyTo: options.stickyTo || 999999999,
       stickyClass: options.stickyClass || null,
       stickyContainer: options.stickyContainer || 'body'
     };
@@ -88,9 +89,11 @@ var Sticky = function () {
     element.sticky.active = false;
 
     element.sticky.marginTop = parseInt(element.getAttribute('data-margin-top')) || this.options.marginTop;
-    element.sticky.stickyFor = parseInt(element.getAttribute('data-sticky-for')) || this.options.stickyFor;
+    element.sticky.stickyFrom = parseInt(element.getAttribute('data-sticky-for')) || this.options.stickyFrom;
+    element.sticky.stickyTo = parseInt(element.getAttribute('data-sticky-to')) || this.options.stickyTo;
     element.sticky.stickyClass = element.getAttribute('data-sticky-class') || this.options.stickyClass;
     element.sticky.wrap = element.hasAttribute('data-sticky-wrap') ? true : this.options.wrap;
+
     // @todo attribute for stickyContainer
     // element.sticky.stickyContainer = element.getAttribute('data-sticky-container') || this.options.stickyContainer;
     element.sticky.stickyContainer = this.options.stickyContainer;
@@ -135,7 +138,7 @@ var Sticky = function () {
 
 
   Sticky.prototype.activate = function activate(element) {
-    if (element.sticky.rect.top + element.sticky.rect.height < element.sticky.container.rect.top + element.sticky.container.rect.height && element.sticky.stickyFor < this.vp.width && !element.sticky.active) {
+    if (this.shouldActivate(element)) {
       element.sticky.active = true;
     }
 
@@ -154,6 +157,13 @@ var Sticky = function () {
     }
 
     this.setPosition(element);
+  };
+
+  Sticky.prototype.shouldActivate = function shouldActivate(element) {
+    if (element.sticky.rect.top + element.sticky.rect.height < element.sticky.container.rect.top + element.sticky.container.rect.height && element.sticky.stickyFrom < this.vp.width && element.sticky.stickyTo > this.vp.width) {
+      return true;
+    }
+    return false;
   };
 
   /**
@@ -196,9 +206,9 @@ var Sticky = function () {
     element.sticky.rect = this.getRectangle(element);
     element.sticky.container.rect = this.getRectangle(element.sticky.container);
 
-    if (element.sticky.rect.top + element.sticky.rect.height < element.sticky.container.rect.top + element.sticky.container.rect.height && element.sticky.stickyFor < this.vp.width && !element.sticky.active) {
+    if (this.shouldActivate(element)) {
       element.sticky.active = true;
-    } else if (element.sticky.rect.top + element.sticky.rect.height >= element.sticky.container.rect.top + element.sticky.container.rect.height || element.sticky.stickyFor >= this.vp.width && element.sticky.active) {
+    } else {
       element.sticky.active = false;
     }
 
@@ -256,18 +266,18 @@ var Sticky = function () {
     this.css(element, { position: '', width: '', top: '', left: '' });
 
     if (this.vp.height < element.sticky.rect.height || !element.sticky.active) {
+      element.classList.remove(element.sticky.stickyClass);
       return;
     }
 
-    if (!element.sticky.rect.width) {
-      element.sticky.rect = this.getRectangle(element);
-    }
+    element.sticky.rect = this.getRectangle(element);
 
     if (element.sticky.wrap) {
       this.css(element.parentNode, {
         display: 'block',
         width: element.sticky.rect.width + 'px',
-        height: element.sticky.rect.height + 'px'
+        height: element.sticky.rect.height + 'px',
+        maxWidth: '100%'
       });
     }
 
