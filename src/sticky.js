@@ -239,7 +239,16 @@ class Sticky {
       return;
     }
 
-    element.sticky.rect = this.getRectangle(element);
+    if (element.sticky.wrap) {
+      this.css(element.parentNode, {
+        width: null,
+        height: null,
+      });
+    }
+
+    if (!element.sticky.rect.width || element.sticky.wrap) {
+      element.sticky.rect = this.getRectangle(element);
+    }
 
     if (element.sticky.wrap) {
       this.css(element.parentNode, {
