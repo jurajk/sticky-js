@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rgalus/sticky-js.git"
+    "url": "git+https://github.com/jurajk/sticky-js.git"
   },
   "keywords": [
     "sticky",
@@ -21,9 +21,9 @@
   "author": "rgalus <biuro@rafalgalus.pl>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rgalus/sticky-js/issues"
+    "url": "https://github.com/jurajk/sticky-js/issues"
   },
-  "homepage": "https://github.com/rgalus/sticky-js#readme",
+  "homepage": "https://github.com/jurajk/sticky-js/#readme",
   "devDependencies": {
     "babel-core": "^6.22.1",
     "babel-preset-es2015": "^6.22.0",

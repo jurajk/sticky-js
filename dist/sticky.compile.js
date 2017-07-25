@@ -270,7 +270,16 @@ var Sticky = function () {
       return;
     }
 
-    element.sticky.rect = this.getRectangle(element);
+    if (element.sticky.wrap) {
+      this.css(element.parentNode, {
+        width: null,
+        height: null
+      });
+    }
+
+    if (!element.sticky.rect.width || element.sticky.wrap) {
+      element.sticky.rect = this.getRectangle(element);
+    }
 
     if (element.sticky.wrap) {
       this.css(element.parentNode, {
@@ -386,8 +395,8 @@ var Sticky = function () {
   Sticky.prototype.getRectangle = function getRectangle(element) {
     this.css(element, { position: '', width: '', top: '', left: '' });
 
-    var width = Math.max(element.offsetWidth, element.clientWidth, element.scrollWidth);
-    var height = Math.max(element.offsetHeight, element.clientHeight, element.scrollHeight);
+    var width = Math.max(element.offsetWidth, element.clientWidth);
+    var height = Math.max(element.offsetHeight, element.clientHeight);
 
     var top = 0;
     var left = 0;
