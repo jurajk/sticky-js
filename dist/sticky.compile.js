@@ -88,9 +88,12 @@ var Sticky = function () {
     // set default variables
     element.sticky.active = false;
 
-    element.sticky.marginTop = parseInt(element.getAttribute('data-margin-top')) || this.options.marginTop;
-    element.sticky.stickyFrom = parseInt(element.getAttribute('data-sticky-for')) || this.options.stickyFrom;
-    element.sticky.stickyTo = parseInt(element.getAttribute('data-sticky-to')) || this.options.stickyTo;
+    element.sticky.marginTop = parseInt(element.getAttribute('data-margin-top')) || (typeof this.options.marginTop === 'function' ? this.options.marginTop(element) : this.options.marginTop);
+
+    element.sticky.stickyFrom = parseInt(element.getAttribute('data-sticky-for')) || (typeof this.options.stickyFrom === 'function' ? this.options.stickyFrom(element) : this.options.stickyFrom);
+
+    element.sticky.stickyTo = parseInt(element.getAttribute('data-sticky-to')) || (typeof this.options.stickyTo === 'function' ? this.options.stickyTo(element) : this.options.stickyTo);
+
     element.sticky.stickyClass = element.getAttribute('data-sticky-class') || this.options.stickyClass;
     element.sticky.wrap = element.hasAttribute('data-sticky-wrap') ? true : this.options.wrap;
 
