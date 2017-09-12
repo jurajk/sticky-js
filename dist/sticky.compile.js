@@ -266,7 +266,10 @@ var Sticky = function () {
 
 
   Sticky.prototype.setPosition = function setPosition(element) {
-    this.css(element, { position: '', width: '', top: '', left: '' });
+    var elementCss = {};
+    var parentCss = {};
+
+    this.mergeObjects(elementCss, { position: '', width: '', top: '', left: '' });
 
     if (this.vp.height < element.sticky.rect.height || !element.sticky.active) {
       element.classList.remove(element.sticky.stickyClass);
@@ -274,7 +277,7 @@ var Sticky = function () {
     }
 
     if (element.sticky.wrap) {
-      this.css(element.parentNode, {
+      this.mergeObjects(parentCss, {
         width: null,
         height: null
       });
@@ -285,7 +288,7 @@ var Sticky = function () {
     }
 
     if (element.sticky.wrap) {
-      this.css(element.parentNode, {
+      this.mergeObjects(parentCss, {
         display: 'block',
         width: element.sticky.rect.width + 'px',
         height: element.sticky.rect.height + 'px',
@@ -294,14 +297,14 @@ var Sticky = function () {
     }
 
     if (element.sticky.rect.top === 0 && element.sticky.container === this.body) {
-      this.css(element, {
+      this.mergeObjects(elementCss, {
         position: 'fixed',
         top: element.sticky.rect.top + 'px',
         left: element.sticky.rect.left + 'px',
         width: element.sticky.rect.width + 'px'
       });
     } else if (this.scrollTop > element.sticky.rect.top - element.sticky.marginTop) {
-      this.css(element, {
+      this.mergeObjects(elementCss, {
         position: 'fixed',
         width: element.sticky.rect.width + 'px',
         left: element.sticky.rect.left + 'px'
@@ -312,27 +315,28 @@ var Sticky = function () {
         if (element.sticky.stickyClass) {
           element.classList.remove(element.sticky.stickyClass);
         }
-
-        this.css(element, {
-          top: element.sticky.container.rect.top + element.sticky.container.offsetHeight - (this.scrollTop + element.sticky.rect.height) + 'px' });
+        this.mergeObjects(elementCss, {
+          top: element.sticky.container.rect.top + element.sticky.container.offsetHeight - (this.scrollTop + element.sticky.rect.height) + 'px'
+        });
       } else {
         if (element.sticky.stickyClass) {
           element.classList.add(element.sticky.stickyClass);
         }
-
-        this.css(element, { top: element.sticky.marginTop + 'px' });
+        this.mergeObjects(elementCss, { top: element.sticky.marginTop + 'px' });
       }
     } else {
       if (element.sticky.stickyClass) {
         element.classList.remove(element.sticky.stickyClass);
       }
-
-      this.css(element, { position: '', width: '', top: '', left: '' });
+      this.mergeObjects(elementCss, { position: '', width: '', top: '', left: '' });
 
       if (element.sticky.wrap) {
-        this.css(element.parentNode, { display: '', width: '', height: '' });
+        this.mergeObjects(parentCss, { display: '', width: '', height: '' });
       }
     }
+
+    this.css(element, elementCss);
+    this.css(element.parentNode, parentCss);
   };
 
   /**
@@ -461,11 +465,17 @@ var Sticky = function () {
 
 
   Sticky.prototype.css = function css(element, properties) {
+    return this.mergeObjects(element.style, properties);
+  };
+
+  Sticky.prototype.mergeObjects = function mergeObjects(target, properties) {
     for (var property in properties) {
       if (properties.hasOwnProperty(property)) {
-        element.style[property] = properties[property];
+        target[property] = properties[property];
       }
     }
+
+    return Object.create(target);
   };
 
   return Sticky;
